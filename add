@@ -1,5 +1,0 @@
-conn = psycopg2.connect("dbname='postgres' user='postgres' host='foreignhost' password='pa55w0rd'")
-cur = conn.cursor()
-
-conn = psycopg2.connect("dbname='postgres' user='postgres' host='localhost' password='badw0rd'")
-cur = conn.cursor()
