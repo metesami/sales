@@ -1,0 +1,48 @@
+version: '3'
+networks:
+  dem:
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - ./db:/var/lib/postgresql/data
+      
+    ports:
+      - 5432:5432
+    networks:
+      - dem
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - '80:80'
+    depends_on:
+      - postgres
+    networks:
+      - dem
+  python_script:
+    container_name: python_script
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./transfer_sales_data.py:/app/transfer_sales_data.py
+      - ./sales_data_cleaned.csv:/app/sales_data_cleaned.csv
+    depends_on:
+      - postgres
+    networks:
+      - dem
+volumes:
+  db:
+    driver: local
